@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { socket } from '../socket';
+import VideoChat from './VideoChat';
 
 const CollaborativeEditor = ({ roomId, language = 'javascript' }) => {
   const editorRef = useRef(null);
   const [code, setCode] = useState('// Start coding...');
   const isRemoteChange = useRef(false);
-
-  // Join room on mount
+  
   useEffect(() => {
     socket.emit('join_room', roomId);
 
@@ -32,14 +32,18 @@ const CollaborativeEditor = ({ roomId, language = 'javascript' }) => {
   };
 
   return (
-    <Editor
-      height="75vh"
-      defaultLanguage={language}
-      value={code}
-      onChange={handleEditorChange}
-      theme="vs-dark"
-      onMount={(editor) => (editorRef.current = editor)}
-    />
+    <div style={{ padding: '1rem' }}>
+      <Editor
+        height="70vh"
+        defaultLanguage={language}
+        value={code}
+        onChange={handleEditorChange}
+        theme="vs-dark"
+        onMount={(editor) => (editorRef.current = editor)}
+      />
+      
+      <VideoChat roomId={roomId} />
+    </div>
   );
 };
 
