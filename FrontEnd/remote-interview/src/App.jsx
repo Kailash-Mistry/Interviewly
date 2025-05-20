@@ -12,7 +12,7 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div>
       {!joined ? (
         <div>
           <h2>Join Coding Room</h2>
@@ -29,7 +29,7 @@ function App() {
           </button>
         </div>
       ) : (
-        <CollaborativeEditor roomId={roomId} language="javascript" />
+        <CollaborativeEditor roomId={roomId} language="cpp" />
       )}
     </div>
   );
