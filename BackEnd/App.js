@@ -1,4 +1,3 @@
-
 // server.js or App.js
 const express = require('express');
 const http = require('http');
@@ -39,6 +38,11 @@ io.on('connection', (socket) => {
 
   socket.on('ice-candidate', ({ candidate, roomId }) => {
     socket.to(roomId).emit('ice-candidate', { candidate, sender: socket.id });
+  });
+
+  // Handle chat messages
+  socket.on('chat_message', ({ room, message, sender, timestamp }) => {
+    io.to(room).emit('chat_message', { message, sender, timestamp });
   });
 
   socket.on('disconnect', () => {
