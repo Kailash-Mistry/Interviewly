@@ -33,16 +33,16 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
   };
 
   return (
-    <div className="h-screen w-full bg-[#1a1a1a] flex flex-col">
+    <div className="h-screen w-full bg-[#1a1a1a] flex flex-col overflow-hidden">
       {/* Top Bar */}
       <div className="h-12 bg-[#2d2d2d] border-b border-[#3c4043] flex items-center px-4">
         <h1 className="text-white text-lg font-medium">Collaborative Editor</h1>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Code Editor Section - Left Half */}
-        <div className="w-1/2 h-full border-r border-[#3c4043]">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+        {/* Code Editor Section */}
+        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full border-b lg:border-b-0 lg:border-r border-[#3c4043]">
           <Editor
             height="100%"
             defaultLanguage={language}
@@ -62,14 +62,14 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
         </div>
 
         {/* Right Half - Video Chat and Chat */}
-        <div className="w-1/2 h-full flex flex-col">
+        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col">
           {/* Video Chat Section */}
-          <div className="h-[60%] border-b border-[#3c4043]">
+          <div className="h-[60%] lg:h-[50%] sm:h-[30%] border-b border-[#3c4043] sm:gap-2 sm:p-2">
             <VideoChat roomId={roomId} />
           </div>
           
           {/* Chat Section */}
-          <div className="flex-1">
+          <div className="h-[40%] lg:h-[50%]">
             <Chat roomId={roomId} username={username} />
           </div>
         </div>

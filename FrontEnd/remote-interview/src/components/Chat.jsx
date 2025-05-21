@@ -35,14 +35,14 @@ const Chat = ({ roomId, username }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#2d2d2d] rounded-lg overflow-hidden">
+    <div className="flex flex-col h-full max-h-full bg-[#2d2d2d] rounded-lg overflow-hidden">
       {/* Chat Header */}
       <div className="p-3 bg-[#1a1a1a] border-b border-[#3c4043]">
-        <h2 className="text-white text-sm font-medium">Live Chat</h2>
+        <h2 className="text-white text-sm rounded-lg font-medium">Live Chat</h2>
       </div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
         {messages.map((msg, index) => (
           <div
             key={index}
