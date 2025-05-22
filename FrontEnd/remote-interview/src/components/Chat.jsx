@@ -53,7 +53,7 @@ const Chat = ({ roomId, username }) => {
             <div
               className={`max-w-[80%] rounded-lg px-3 py-2 ${
                 msg.sender === username
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-black text-white'
                   : 'bg-[#3c4043] text-white'
               }`}
             >
@@ -75,11 +75,11 @@ const Chat = ({ roomId, username }) => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-[#2d2d2d] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 bg-[#2d2d2d] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800"
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-00 transition-colors"
           >
             Send
           </button>

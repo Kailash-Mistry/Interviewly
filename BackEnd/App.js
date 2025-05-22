@@ -3,16 +3,47 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const server = http.createServer(app);
+
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const io = new Server(server, {
   cors: {
     origin: '*', 
     methods: ['GET', 'POST']
+  }
+});
+
+// Add code analysis endpoint
+app.post('/analyze-code', async (req, res) => {
+  try {
+    const { code, language } = req.body;
+    
+    // Get the Gemini Pro model
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    // Create a prompt for code analysis
+    const prompt = `Review the following ${language} code ,Give the expected Time and Space Complexity and check for syntax errors if any and suggestions for optimization . keep the ans concise and to the point:
+
+${code}`;
+
+    // Generate content
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const analysis = response.text();
+
+    res.json({ analysis });
+  } catch (error) {   
+    console.error('Error analyzing code:', error);
+    res.status(500).json({ error: 'Failed to analyze code' });
   }
 });
 
