@@ -6,6 +6,7 @@ import Signup from './components/Auth/Signup';
 import CollaborativeEditor from './components/CollaborativeEditor';
 import JoinRoom from './components/JoinRoom';
 import DashBoard from './components/DashBoard';
+import LandingPage from './components/LandingPage';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -25,6 +26,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashBoard/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/landing"
+            element={
+              <ProtectedRoute>
+                <LandingPage/>
               </ProtectedRoute>
             }
           />
