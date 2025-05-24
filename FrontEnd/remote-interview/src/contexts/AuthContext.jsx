@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../firebase/config';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
@@ -6,7 +7,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase/config';
+import { db } from '../firebase/config';
 
 const AuthContext = createContext();
 
@@ -19,39 +20,12 @@ export function AuthProvider({ children }) {
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  async function signup(email, password, type) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      // Store user type in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        userType: type,
-        createdAt: new Date().toISOString()
-      });
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
+  function signup(email, password, userType) {
+    return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  async function login(email, password) {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      // Fetch user type from Firestore
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (userDoc.exists()) {
-        setUserType(userDoc.data().userType);
-      }
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
+  function login(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
   }
 
   function logout() {

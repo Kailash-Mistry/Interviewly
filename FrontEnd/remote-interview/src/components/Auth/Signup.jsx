@@ -120,11 +120,22 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-[#005c4b] text-white rounded-lg hover:bg-[#006d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005c4b] disabled:opacity-50"
+            className="w-full py-3 bg-[#005c4b] hover:bg-[#006d5b] text-white font-semibold rounded-lg shadow-lg transition-all duration-300 disabled:opacity-50"
           >
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <p className="text-gray-300">
+            Already have an account?{' '}
+            <button
+              onClick={() => navigate('/login')}
+              className="text-[#5ea8ff] hover:underline font-medium"
+            >
+              Login
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

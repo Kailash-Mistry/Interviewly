@@ -4,6 +4,9 @@ import { socket } from '../socket';
 import VideoChat from './VideoChat';
 import Chat from './Chat';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../contexts/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/config.js';
 
 // Add custom scrollbar styles
 const scrollbarStyles = `
@@ -14,39 +17,39 @@ const scrollbarStyles = `
   }
 
   ::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: #111b21;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #4a4a4a;
+    background: #202c33;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #5a5a5a;
+    background: #005c4b;
   }
 
   /* For Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #4a4a4a #1a1a1a;
+    scrollbar-color: #202c33 #111b21;
   }
 `;
 
 // Basic dark theme styles
 const darkThemeStyles = `
   .dark-theme {
-    background-color: #1a1a1a; /* Dark background */
-    color: #e0e0e0; /* Light text color */
+    background-color: #111b21;
+    color: #e0e0e0;
   }
 
   .dark-theme h1, .dark-theme h3, .dark-theme h4 {
-    color: #ffffff; /* White color for headings */
+    color: #ffffff;
   }
 
   .dark-theme .text-gray-300 {
-    color: #b0b0b0; /* Slightly lighter gray for secondary text */
+    color: #b0b0b0;
   }
 `;
 
@@ -58,6 +61,8 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
   const [activeTab, setActiveTab] = useState('code'); // 'code', 'ai', or 'responses'
   const [aiResponses, setAiResponses] = useState([]);// array to store the responses from the AI 
   const [selectedLanguage, setSelectedLanguage] = useState(language);
+  const [isInterviewer, setIsInterviewer] = useState(false);
+  const { currentUser } = useAuth();
 
   const languages = [
     { id: 'cpp', name: 'C++' },
@@ -69,6 +74,24 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     { id: 'go', name: 'Go' },
     { id: 'rust', name: 'Rust' }
   ];
+
+  useEffect(() => {
+    const checkUserRole = async () => {
+      if (currentUser) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setIsInterviewer(userData.userType === 'interviewer');
+          }
+        } catch (error) {
+          console.error('Error checking user role:', error);
+        }
+      }
+    };
+
+    checkUserRole();
+  }, [currentUser]);
 
   useEffect(() => {
     socket.emit('join_room', roomId);
@@ -93,7 +116,10 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     isRemoteChange.current = false;
   };
 
-  const handleAskAI = async () => { // get ai response from the backend
+  const handleAskAI = async () => {
+    if (!isInterviewer) {
+      return;
+    }
     try {
       setIsLoading(true);
       const response = await fetch('http://localhost:5000/analyze-code', {
@@ -106,15 +132,11 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
       
       const data = await response.json();
       if (data.analysis) {
-        // Add the response to the history
-        setAiResponses(prev => [...prev, {     // spread operator so no new array is formed inside an array
+        setAiResponses(prev => [...prev, {
           timestamp: new Date().toLocaleString(),
-          code: code, // Store the code that was analyzed
-          analysis: data.analysis // Store the AI's analysis
+          code: code,
+          analysis: data.analysis
         }]);
-        // Remove the lines below to prevent updating the code editor
-        // setCode(data.analysis);
-        // socket.emit('code_change', { room: roomId, newCode: data.analysis });
       }
     } catch (error) {
       console.error('Error analyzing code:', error);
@@ -148,21 +170,27 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
           </div>
         );
       case 'ai':
+        if (!isInterviewer) {
+          return (
+            <div className="w-full h-full p-4 bg-[#111b21] text-white flex items-center justify-center">
+              <p className="text-[#e9edef]">This feature is only available to interviewers.</p>
+            </div>
+          );
+        }
         return (
-          <div className="w-full h-full p-4 bg-[#1a1a1a] text-white">
+          <div className="w-full h-full p-4 bg-[#111b21] text-white">
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-2">Ask AI for Help</h3>
-              <p className="text-gray-300 mb-4">Get AI assistance with your code. The AI can help with:</p>
-              <ul className="list-disc list-inside text-gray-300 mb-4 ">
+              <p className="text-[#e9edef] mb-4">Get AI assistance with your code. The AI can help with:</p>
+              <ul className="list-disc list-inside text-[#e9edef] mb-4">
                 <li>Code explanation</li>
                 <li>Code optimization</li>
                 <li>Space and time complexity analysis</li>
-                
               </ul>
               <button
                 onClick={handleAskAI}
                 disabled={isLoading}
-                className="px-4 py-2 bg-black border-gray-500 text-white rounded hover:bg-gray-600 hover:cursor-pointer disabled:bg-blue-400"
+                className="px-4 py-2 bg-[#005c4b] text-white rounded hover:bg-[#006d5b] transition-colors duration-200 disabled:opacity-50"
               >
                 {isLoading ? 'Analyzing...' : 'Ask AI'}
               </button>
@@ -170,24 +198,30 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
           </div>
         );
       case 'responses':
+        if (!isInterviewer) {
+          return (
+            <div className="w-full h-full p-4 bg-[#111b21] text-white flex items-center justify-center">
+              <p className="text-[#e9edef]">This feature is only available to interviewers.</p>
+            </div>
+          );
+        }
         return (
-          <div className="w-full h-full bg-[#1a1a1a] text-white flex flex-col">
-            
+          <div className="w-full h-full bg-[#111b21] text-white flex flex-col">
             <div className="flex-1 overflow-y-auto p-4">
               {aiResponses.length === 0 ? (
-                <p className="text-gray-300">No previous responses yet.</p>
+                <p className="text-[#e9edef]">No previous responses yet.</p>
               ) : (
                 <div className="space-y-4">
                   {aiResponses.map((response, index) => (
-                    <div key={index} className="bg-[#2d2d2d] rounded-lg p-4 break-words">
+                    <div key={index} className="bg-[#202c33] rounded-lg p-4 break-words">
                       <div className="text-sm text-gray-400 mb-2">{response.timestamp}</div>
                       <div className="mb-2">
-                        <h4 className="font-medium mb-1">Original Code:</h4>
-                        <pre className="bg-[#1a1a1a] p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap">{response.code}</pre>
+                        <h4 className="font-medium mb-1 text-[#e9edef]">Original Code:</h4>
+                        <pre className="bg-[#111b21] p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap text-[#e9edef]">{response.code}</pre>
                       </div>
                       <div>
-                        <h4 className="font-medium mb-1">AI Analysis:</h4>
-                        <div className="bg-[#1a1a1a] p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap">
+                        <h4 className="font-medium mb-1 text-[#e9edef]">AI Analysis:</h4>
+                        <div className="bg-[#111b21] p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap text-[#e9edef]">
                           <ReactMarkdown>{response.analysis}</ReactMarkdown>
                         </div>
                       </div>
@@ -208,63 +242,66 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
       <style>{scrollbarStyles}</style>
       <style>{darkThemeStyles}</style>
       {/* Top Bar */}
-      <div className="h-12 bg-[#2d2d2d] border-b border-[#3c4043] flex items-center justify-between px-4">
+      <div className="h-12 bg-[#202c33] flex items-center justify-between px-4">
         <h1 className="text-white text-lg font-medium">Collaborative Editor</h1>
-        
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
         {/* Left Half - Code Editor and Tabs */}
-        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full border-b lg:border-b-0 lg:border-r  flex flex-col">
+        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col">
           {/* Tabs */}
-          <div className="flex gap-1 rounded-lg">
+          <div className="flex gap-1 bg-[#111b21] p-1 border-r border-[#202c33] border-r-2">
             <button
               onClick={() => setActiveTab('code')}
-              className={`px-4 hover:cursor-pointer py-2 text-sm font-medium hover:bg-gray-700 rounded-sm ${
+              className={`px-4 hover:cursor-pointer py-2 text-sm font-medium hover:bg-[#005c4b] rounded-sm ${
                 activeTab === 'code'
-                  ? 'text-white border-b-2 border-gray-300 '
+                  ? 'text-white bg-[#005c4b]'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               Code Editor
             </button>
-            <button
-              onClick={() => setActiveTab('ai')}
-              className={`px-4 py-2 hover:cursor-pointer text-sm font-medium hover:bg-gray-700 rounded-sm ${
-                activeTab === 'ai'
-                  ? 'text-white border-b-2 border-gray-300'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Ask AI
-            </button>
-            <button
-              onClick={() => setActiveTab('responses')}
-              className={`px-4 py-2 hover:cursor-pointer text-sm font-medium hover:bg-gray-700 rounded-sm ${
-                activeTab === 'responses'
-                  ? 'text-white border-b-2 border-gray-300'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Previous Responses
-            </button>
-            <div className="flex items-center  ml-4 text-sm font-medium  ">
-          <div className='flex gap-3 '>
-            <h3 className='text-gray-400 p-2'>Select Language</h3>
-          <select
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="bg-[#1a1a1a] text-white px-3 py-1 rounded border border-[#3c4043] focus:outline-none focus:border-gray-800 "
-          >
-            {languages.map((lang) => (
-              <option key={lang.id} value={lang.id}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-          </div>
-        </div>
+            {isInterviewer && (
+              <>
+                <button
+                  onClick={() => setActiveTab('ai')}
+                  className={`px-4 py-2 hover:cursor-pointer text-sm font-medium hover:bg-[#005c4b] rounded-sm ${
+                    activeTab === 'ai'
+                      ? 'text-white bg-[#005c4b]'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Ask AI
+                </button>
+                <button
+                  onClick={() => setActiveTab('responses')}
+                  className={`px-4 py-2 hover:cursor-pointer text-sm font-medium hover:bg-[#005c4b] rounded-sm ${
+                    activeTab === 'responses'
+                      ? 'text-white bg-[#005c4b]'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Previous Responses
+                </button>
+              </>
+            )}
+            <div className="flex items-center ml-4 text-sm font-medium">
+              <div className='flex gap-3'>
+                <h3 className='text-gray-400 p-2'>Select Language</h3>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="bg-[#111b21] text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#005c4b]"
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.id} value={lang.id}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
           
           {/* Tab Content */}
@@ -276,7 +313,7 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
         {/* Right Half - Video Chat and Chat */}
         <div className="w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col">
           {/* Video Chat Section */}
-          <div className="h-[60%] lg:h-[50%] sm:h-[30%] border-b border-[#3c4043] sm:gap-2 sm:p-2">
+          <div className="h-[60%] lg:h-[50%] sm:h-[30%] sm:gap-2 sm:p-2">
             <VideoChat roomId={roomId} />
           </div>
           

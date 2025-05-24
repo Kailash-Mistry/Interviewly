@@ -97,7 +97,7 @@ const VideoChat = ({ roomId }) => {
   };
 
   return (
-    <div className="relative w-full h-full max-w-7xl mx-auto px-2 sm:px-3 pt-1 sm:pt-3 pb-1 sm:pb-2 bg-[#202124] rounded-2xl shadow-lg flex flex-col">
+    <div className="relative w-full h-full max-w-7xl mx-auto px-2 sm:px-3 pt-1 sm:pt-3 pb-1 sm:pb-2 bg-[#111b21] rounded-2xl shadow-lg flex flex-col">
       <div className="flex-1 grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 p-1 sm:p-2 h-[100px] sm:h-[calc(100%-4rem)] w-full sm:max-w-none items-center">
         <div className="relative rounded-full sm:rounded-2xl overflow-hidden bg-[#2d2d2d] shadow-md h-2/3 w-full sm:h-full sm:w-full">
           <video
@@ -111,7 +111,7 @@ const VideoChat = ({ roomId }) => {
             You
           </div>
         </div>
-        <div className="relative rounded-full sm:rounded-2xl overflow-hidden bg-[#2d2d2d] shadow-md h-2/3 w-full sm:h-full sm:w-full">
+        <div className="relative rounded-full sm:rounded-2xl overflow-hidden bg-[#111b21] shadow-md h-2/3 w-full sm:h-full sm:w-full">
           <video
             ref={remoteVideoRef}
             autoPlay
@@ -124,12 +124,12 @@ const VideoChat = ({ roomId }) => {
         </div>
       </div>
 
-      <div className="flex justify-center gap-2 sm:gap-4 p-1 sm:p-2 bg-[#202124]/90 backdrop-blur-md rounded-lg sm:rounded-xl h-10 sm:h-14">
+      <div className="flex justify-center gap-2 sm:gap-4 p-1 sm:p-2 bg-[#111b21]/90 backdrop-blur-md rounded-lg sm:rounded-xl h-10 sm:h-14">
         <button 
           onClick={toggleAudio} 
           className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-none transition-all duration-200 ease-in-out ${
             audioEnabled 
-              ? 'bg-[#3c4043] hover:bg-[#4a4d51]' 
+              ? 'bg-[#3c4043] hover:bg-[#006d5b]' 
               : 'bg-[#ea4335] hover:bg-[#f44336]'
           }`}
         >
@@ -145,7 +145,7 @@ const VideoChat = ({ roomId }) => {
           onClick={toggleVideo} 
           className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-none transition-all duration-200 ease-in-out ${
             videoEnabled 
-              ? 'bg-[#3c4043] hover:bg-[#4a4d51]' 
+              ? 'bg-[#3c4043] hover:bg-[#006d5b]' 
               : 'bg-[#ea4335] hover:bg-[#f44336]'
           }`}
         >

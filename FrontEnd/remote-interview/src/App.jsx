@@ -14,18 +14,38 @@ const ProtectedRoute = ({ children }) => {
   return currentUser ? children : <Navigate to="/login" />;
 };
 
+// Public Route component (only accessible when not logged in)
+const PublicRoute = ({ children }) => {
+  const { currentUser } = useAuth();
+  return !currentUser ? children : <Navigate to="/landing" />;
+};
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashBoard/>
+                <DashBoard />
               </ProtectedRoute>
             }
           />
@@ -33,7 +53,15 @@ function App() {
             path="/landing"
             element={
               <ProtectedRoute>
-                <LandingPage/>
+                <LandingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editor/:roomId"
+            element={
+              <ProtectedRoute>
+                <CollaborativeEditor />
               </ProtectedRoute>
             }
           />
