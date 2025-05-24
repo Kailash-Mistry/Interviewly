@@ -4,10 +4,10 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import CollaborativeEditor from './components/CollaborativeEditor';
-import JoinRoom from './components/JoinRoom';
 import DashBoard from './components/DashBoard';
 import LandingPage from './components/LandingPage';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -23,6 +23,7 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+       <ToastContainer />
       <AuthProvider>
         <Routes>
           <Route

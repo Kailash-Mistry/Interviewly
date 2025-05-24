@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -27,6 +28,7 @@ const Signup = () => {
       setError('');
       setLoading(true);
       await signup(email, password, userType);
+      
       navigate('/landing');
     } catch (error) {
       setError('Failed to create an account: ' + error.message);

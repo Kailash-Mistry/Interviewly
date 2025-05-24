@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import kailashImg from './public/assets/kailash_img.jpg';
+import kailashImg from './public/assets/kailash.jpg';
+import SwastikImg from './public/assets/photo2.jpg';
 import illustrationSvg from './public/assets/illustration.svg';
 import answersSvg from './public/assets/answers.svg';
 
@@ -67,46 +68,49 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-[#5ea8ff]">Interviewly</h1>
-            </div>
+            <button 
+            onClick={()=>navigate("/landing")}
+            className="flex-shrink-0">
+
+              <h1 className="text-2xl font-bold text-[#5ea8ff] hover:cursor-pointer">Interviewly</h1>
+            </button>
 
             {/* Desktop Menu */}
             <div className="hidden md:block">
               <div className="ml-10 flex items-center space-x-4">
                 <button
                   onClick={() => scrollToSection('features')}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   Features
                 </button>
                 <button
                   onClick={() => scrollToSection('about')}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   About
                 </button>
                 <button
                   onClick={() => scrollToSection('team')}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   Team
                 </button>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   Contact
                 </button>
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   Dashboard
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="bg-[#005c4b] hover:bg-[#006d5b] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-[#005c4b] hover:bg-[#006d5b] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors hover:cursor-pointer"
                 >
                   Logout
                 </button>
@@ -198,7 +202,7 @@ const LandingPage = () => {
             </p>
             <button
               onClick={() => navigate('/dashboard')}
-              className="px-8 py-3 bg-[#005c4b] hover:bg-[#006d5b] text-white font-semibold rounded-lg shadow-lg transition-all duration-300 animate-bounce"
+              className="px-8 py-3 bg-[#005c4b] hover:bg-[#006d5b] text-white font-semibold rounded-lg shadow-lg transition-all duration-300 animate-bounce hover:cursor-pointer"
             >
               Go to Dashboard
             </button>
@@ -245,18 +249,18 @@ const LandingPage = () => {
         </section>
         {/* Team Section */}
         <section id="team" className="py-16 px-4 md:px-16 bg-[#111b21]">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white animate-fadeInUp">Meet the Team</h2>
-          <div className="flex flex-wrap justify-center gap-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center items-center  mb-12 text-white animate-fadeInUp">Meet the Team</h2>
+          <div className="flex flex-wrap justify-center gap-20">
             {/* Example team members, replace with your own */}
-            <div className="bg-[#202c33] rounded-xl p-6 shadow-lg flex flex-col items-center w-64 animate-fadeInUp">
+            <div className="bg-[#202c33] rounded-xl  hover:scale-105 transition delay-150 duration-300 ease-in-out p-6 shadow-lg flex flex-col items-center w-64 animate-fadeInUp">
               <img src={kailashImg} alt="Team Member" className="w-24 h-24 rounded-full mb-4 border-4 border-[#005c4b] object-cover" />
-              <h3 className="text-xl font-semibold text-[#5ea8ff]">Mumbaicha Don</h3>
-              <p className="text-gray-300">AI Developer</p>
+              <h3 className="text-xl font-semibold text-[#5ea8ff]">Kailash Mistry</h3>
+              <p className="text-gray-300">Developer</p>
             </div>
-            <div className="bg-[#202c33] rounded-xl p-6 shadow-lg flex flex-col items-center w-64 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Team Member" className="w-24 h-24 rounded-full mb-4 border-4 border-[#005c4b] object-cover" />
-              <h3 className="text-xl font-semibold text-[#5ea8ff]">Chhapri Leader</h3>
-              <p className="text-gray-300">UI/UX Designer</p>
+            <div className="bg-[#202c33] rounded-xl hover:scale-105 transition delay-150 duration-300 ease-in-out p-6 shadow-lg flex flex-col items-center w-64 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+              <img src={SwastikImg} alt="Team Member" className="w-24 h-24 rounded-full mb-4 border-4 border-[#005c4b] object-cover" />
+              <h3 className="text-xl font-semibold text-[#5ea8ff]">Swastik Verma</h3>
+              <p className="text-gray-300">Developer</p>
             </div>
           </div>
         </section>
@@ -280,12 +284,8 @@ const LandingPage = () => {
           </form>
         </section>
         {/* Footer */}
-        <footer className="bg-[#111b21] text-gray-400 py-8 px-4 md:px-16 text-center border-t border-[#202c33] animate-fadeIn">
-          <div className="mb-2">
-            <a href="#" className="text-[#5ea8ff] hover:underline mx-2">Home</a>
-            <a href="#" className="text-[#5ea8ff] hover:underline mx-2">Team</a>
-            <a href="#" className="text-[#5ea8ff] hover:underline mx-2">Contact</a>
-          </div>
+        <footer className="bg-[#111b21] text-gray-400 py-4 px-4 md:px-16 text-center border-t border-[#202c33] animate-fadeIn">
+          
           <div>&copy; {new Date().getFullYear()} Interviewly. All rights reserved.</div>
         </footer>
         {/* Animations */}

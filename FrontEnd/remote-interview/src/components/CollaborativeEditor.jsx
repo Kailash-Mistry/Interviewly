@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config.js';
+import { toast } from 'react-toastify';
 
 // Add custom scrollbar styles
 const scrollbarStyles = `
@@ -63,7 +64,7 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(language);
   const [isInterviewer, setIsInterviewer] = useState(false);
   const { currentUser } = useAuth();
-
+  
   const languages = [
     { id: 'cpp', name: 'C++' },
     { id: 'javascript', name: 'JavaScript' },
@@ -74,6 +75,20 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     { id: 'go', name: 'Go' },
     { id: 'rust', name: 'Rust' }
   ];
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Copied to clipboard!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+      });
+      setCopySuccess('Copied!');
+      setTimeout(() => setCopySuccess(''), 2000);
+    } catch (err) {
+      setCopySuccess('Failed to copy!');
+    }
+  };
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -165,6 +180,7 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
+                
               }}
             />
           </div>
@@ -241,17 +257,26 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     <div className="h-screen w-full flex flex-col overflow-hidden dark-theme">
       <style>{scrollbarStyles}</style>
       <style>{darkThemeStyles}</style>
-      {/* Top Bar */}
+      {/* Top Bar */} 
       <div className="h-12 bg-[#202c33] flex items-center justify-between px-4">
-        <h1 className="text-white text-lg font-medium">Collaborative Editor</h1>
+      <button 
+            
+            className="flex-shrink-0 text-xl font-bold text-blue-500 hover:cursor-pointer">
+              Interviewly
+        </button>
+        <button
+        onClick={copyToClipboard}
+         className='bg-[#005c4b] px-2 py-1 rounded-xl font-bold text-sm hover:cursor-pointer'>
+          Room ID
+        </button>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
         {/* Left Half - Code Editor and Tabs */}
-        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col">
+        <div className="w-full lg:w-1/2 h-[33vh] lg:h-full flex flex-col">
           {/* Tabs */}
-          <div className="flex gap-1 bg-[#111b21] p-1 border-r border-[#202c33] border-r-2">
+          <div className="flex flex-wrap gap-1 bg-[#111b21] p-1 border-[#202c33] border-r-2">
             <button
               onClick={() => setActiveTab('code')}
               className={`px-4 hover:cursor-pointer py-2 text-sm font-medium hover:bg-[#005c4b] rounded-sm ${
@@ -287,7 +312,7 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
               </>
             )}
             <div className="flex items-center ml-4 text-sm font-medium">
-              <div className='flex gap-3'>
+              <div className='flex flex-wrap gap-3'>
                 <h3 className='text-gray-400 p-2'>Select Language</h3>
                 <select
                   value={selectedLanguage}
@@ -311,14 +336,14 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
         </div>
 
         {/* Right Half - Video Chat and Chat */}
-        <div className="w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col">
+        <div className="w-full lg:w-1/2 flex flex-col">
           {/* Video Chat Section */}
-          <div className="h-[60%] lg:h-[50%] sm:h-[30%] sm:gap-2 sm:p-2">
+          <div className="h-[33vh] lg:h-[50%]">
             <VideoChat roomId={roomId} />
           </div>
           
           {/* Chat Section */}
-          <div className="h-[40%] lg:h-[50%]">
+          <div className="h-[33vh] lg:h-[50%]">
             <Chat roomId={roomId} username={username} />
           </div>
         </div>
