@@ -3,13 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyASP3ELT1ZE1SAqDNh94iRVXW5Y3FKGUX0",
-  authDomain: "interviewly-b6221.firebaseapp.com",
-  projectId: "interviewly-b6221",
-  storageBucket: "interviewly-b6221.firebasestorage.app",
-  messagingSenderId: "459332674631",
-  appId: "1:459332674631:web:129c7e6361240bd2503d62",
-  measurementId: "G-CHH9GDKFSL"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);

@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import CollaborativeEditor from './components/CollaborativeEditor';
-import DashBoard from './components/DashBoard';
+import Dashboard from './components/Dashboard';
 import LandingPage from './components/LandingPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -46,7 +46,7 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashBoard />
+                <Dashboard />
               </ProtectedRoute>
             }
           />

@@ -137,7 +137,7 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     }
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/analyze-code', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/analyze-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,8 +197,8 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
           <div className="w-full h-full p-4 bg-[#111b21] text-white">
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-2">Ask AI for Help</h3>
-              <p className="text-[#e9edef] mb-4">Get AI assistance with your code. The AI can help with:</p>
-              <ul className="list-disc list-inside text-[#e9edef] mb-4">
+              <p className="text-[#e9edef] mb-4 hidden sm:block">Get AI assistance with your code. The AI can help with:</p>
+              <ul className="list-disc list-inside text-[#e9edef] mb-4  hidden sm:block">
                 <li>Code explanation</li>
                 <li>Code optimization</li>
                 <li>Space and time complexity analysis</li>
@@ -352,4 +352,4 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
   );
 };
 
-export default CollaborativeEditor; 
+export default CollaborativeEditor;

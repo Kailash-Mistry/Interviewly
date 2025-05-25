@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { socket } from '../socket';
 
-const VideoChat = ({ roomId }) => {
+const VideoChat = ({ roomId, username }) => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
@@ -119,6 +119,7 @@ const VideoChat = ({ roomId }) => {
             className="w-full h-full object-cover rounded-full sm:rounded-2xl sm:w-full sm:h-full bg-[#1a1a1a]"
           />
           <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2 bg-black/60 text-white px-1.5 sm:px-2 py-0.5 rounded text-xs sm:text-sm">
+            {/* {username} */}
             Peer
           </div>
         </div>
