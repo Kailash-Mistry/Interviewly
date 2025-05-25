@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { db } from '../../firebase/config';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -27,8 +29,12 @@ const Signup = () => {
     try {
       setError('');
       setLoading(true);
-      await signup(email, password, userType);
-      
+      const userCredential = await signup(email, password, userType);
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        email,
+        userType,
+        createdAt: new Date()
+      });
       navigate('/landing');
     } catch (error) {
       setError('Failed to create an account: ' + error.message);
