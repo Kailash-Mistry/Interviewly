@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CollaborativeEditor from './CollaborativeEditor';
 import { v4 as uuidv4 } from 'uuid';
 
-function DashBoard() {
+function Dashboard() {
   const [joined, setJoined] = useState(false);
   const [roomId, setRoomId] = useState('');
   const [username, setusername] = useState("");
@@ -148,4 +148,4 @@ function DashBoard() {
   );
 }
 
-export default DashBoard;
+export default Dashboard;
