@@ -76,6 +76,14 @@ io.on('connection', (socket) => {
     io.to(room).emit('chat_message', { message, sender, timestamp });
   });
 
+  socket.on('user_leaving', ({ room, username }) => {
+    socket.to(room).emit('user_left', { username });
+  });
+
+  socket.on('interviewee_action', ({ room, action, username }) => {
+    socket.to(room).emit('interviewee_action', { action, username });
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });

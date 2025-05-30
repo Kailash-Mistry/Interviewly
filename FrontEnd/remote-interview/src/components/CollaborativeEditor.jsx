@@ -62,8 +62,9 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
   const [activeTab, setActiveTab] = useState('code'); // 'code', 'ai', or 'responses'
   const [aiResponses, setAiResponses] = useState([]);// array to store the responses from the AI 
   const [selectedLanguage, setSelectedLanguage] = useState(language);
-  const [isInterviewer, setIsInterviewer] = useState(false);
+  const [isInterviewer, setIsInterviewer] = useState(true);
   const { currentUser } = useAuth();
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const languages = [
     { id: 'cpp', name: 'C++' },
@@ -123,6 +124,40 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
     };
   }, [roomId, code]);
 
+  // Separate useEffect for user notifications
+  useEffect(() => {
+    socket.on('user_left', ({ username }) => {
+      toast.info(`${username} has left the meeting`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+      });
+    });
+
+    socket.on('interviewee_action', ({ action, username }) => {
+      if (isInterviewer) {
+        if (action === 'switched_tab') {
+          toast.warning(`${username} has switched to another tab!`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+          });
+        } else if (action === 'exited_fullscreen') {
+          toast.warning(`${username} has exited fullscreen mode!`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+          });
+        }
+      }
+    });
+
+    return () => {
+      socket.off('user_left');
+      socket.off('interviewee_action');
+    };
+  }, [isInterviewer]);
+
   const handleEditorChange = (value) => {
     if (!isRemoteChange.current) {
       setCode(value);
@@ -159,6 +194,102 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
       setIsLoading(false);
     }
   };
+
+  const handleLeaveMeeting = () => {
+    socket.emit('user_leaving', { room: roomId, username });
+    window.location.reload();
+  };
+
+  // Function to enter fullscreen
+  const enterFullscreen = async () => {
+    try {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        await document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        await document.documentElement.msRequestFullscreen();
+      }
+      setIsFullscreen(true);
+    } catch (error) {
+      console.error('Error entering fullscreen:', error);
+    }
+  };
+
+  // Function to exit fullscreen
+  const exitFullscreen = async () => {
+    try {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        await document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        await document.msExitFullscreen();
+      }
+      setIsFullscreen(false);
+    } catch (error) {
+      console.error('Error exiting fullscreen:', error);
+    }
+  };
+
+  // Handle visibility change
+  const handleVisibilityChange = () => {
+    if (!isInterviewer && document.hidden) {
+      toast.warning("Please don't switch windows during the interview!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+      });
+      // Notify interviewer
+      socket.emit('interviewee_action', { 
+        room: roomId, 
+        action: 'switched_tab',
+        username: username 
+      });
+    }
+  };
+
+  // Handle fullscreen change
+  const handleFullscreenChange = () => {
+    const wasFullscreen = isFullscreen;
+    const isNowFullscreen = !!document.fullscreenElement || 
+                           !!document.webkitFullscreenElement || 
+                           !!document.msFullscreenElement;
+    setIsFullscreen(isNowFullscreen);
+
+    // If interviewee exits fullscreen, notify interviewer
+    if (!isInterviewer && wasFullscreen && !isNowFullscreen) {
+      socket.emit('interviewee_action', { 
+        room: roomId, 
+        action: 'exited_fullscreen',
+        username: username 
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!isInterviewer) {
+      // Enter fullscreen for interviewees
+      enterFullscreen();
+      
+      // Add event listeners
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      document.addEventListener('fullscreenchange', handleFullscreenChange);
+      document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+      // Cleanup
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.removeEventListener('msfullscreenchange', handleFullscreenChange);
+        if (isFullscreen) {
+          exitFullscreen();
+        }
+      };
+    }
+  }, [isInterviewer]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -259,16 +390,30 @@ const CollaborativeEditor = ({ roomId, language = 'cpp', username }) => {
       <style>{darkThemeStyles}</style>
       {/* Top Bar */} 
       <div className="h-12 bg-[#202c33] flex items-center justify-between px-4">
-      <button 
-            
-            className="flex-shrink-0 text-xl font-bold text-blue-500 hover:cursor-pointer">
-              Interviewly
+        <button 
+          className="flex-shrink-0 text-xl font-bold text-blue-500 hover:cursor-pointer">
+          Interviewly
         </button>
-        <button
-        onClick={copyToClipboard}
-         className='bg-[#005c4b] px-2 py-1 rounded-xl font-bold text-sm hover:cursor-pointer'>
-          Room ID
-        </button>
+        <div className="flex gap-2">
+          {!isInterviewer && !isFullscreen && (
+            <button
+              onClick={enterFullscreen}
+              className='bg-[#005c4b] px-2 py-1 rounded-xl font-bold text-sm hover:cursor-pointer hover:bg-[#006d5b] transition-colors'
+            >
+              {'Fullscreen'}
+            </button>
+          )}
+          <button
+            onClick={copyToClipboard}
+            className='bg-[#005c4b] px-2 py-1 rounded-xl font-bold text-sm hover:cursor-pointer'>
+            Room ID
+          </button>
+          <button
+            onClick={handleLeaveMeeting}
+            className='bg-red-600 px-2 py-1 rounded-xl font-bold text-sm hover:cursor-pointer hover:bg-red-700 transition-colors'>
+            Leave Meeting
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
