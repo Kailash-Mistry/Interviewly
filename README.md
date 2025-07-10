@@ -128,15 +128,9 @@ npm start
 ## 🤝 Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 👥 Authors
 - Kailash Mistry
 - Swastik Verma
-
-## 🙏 Acknowledgments
-- Google Gemini AI for code analysis
-- Monaco Editor for the code editor
-- Socket.io for real-time communication
-- WebRTC for video/audio streaming 
+  
+## 🔗 Link To The Website
+https://interviewly-1.onrender.com
